@@ -1,0 +1,17 @@
+2021-05-13 06:33:15,237 - Communication RPi - ERROR - SSH connection failed
+2021-05-13 06:33:15,237 - Communication RPi - ERROR - [WinError 2] Das System kann die angegebene Datei nicht finden: 'monitor_parameters_V8.py'
+2021-05-13 06:34:35,028 - Communication RPi - ERROR - SSH connection failed
+2021-05-13 06:34:35,028 - Communication RPi - ERROR - [WinError 2] Das System kann die angegebene Datei nicht finden: 'monitor_parameters_V8.py'
+2021-05-13 06:49:05,660 - Communication RPi - ERROR - SSH connection failed
+2021-05-13 06:49:05,660 - Communication RPi - ERROR - [WinError 2] Das System kann die angegebene Datei nicht finden: 'monitor_parameters_V8.py'
+2021-05-13 06:50:39,802 - Communication RPi - ERROR - SSH connection failed
+2021-05-13 06:50:39,802 - Communication RPi - ERROR - [WinError 10060] Ein Verbindungsversuch ist fehlgeschlagen, da die Gegenstelle nach einer bestimmten Zeitspanne nicht richtig reagiert hat, oder die hergestellte Verbindung war fehlerhaft, da der verbundene Host nicht reagiert hat
+2021-05-13 06:52:02,412 - Communication RPi - ERROR - SSH connection failed
+2021-05-13 06:52:02,412 - Communication RPi - ERROR - [WinError 2] Das System kann die angegebene Datei nicht finden: 'monitor_parameters_V8.py'
+2021-05-13 06:56:04,808 - Communication RPi - ERROR - SSH connection failed
+2021-05-13 06:56:04,808 - Communication RPi - ERROR - [WinError 2] Das System kann die angegebene Datei nicht finden: 'monitor_parameters_V8.py'
+2021-05-13 07:45:55,437 - Communication NW Server - ERROR - MQTT connection failed
+2021-05-15 08:42:28,231 - Communication NW Server - ERROR - MQTT connection failed
+2021-05-15 09:00:12,785 - Communication NW Server - ERROR - MQTT connection failed
+2021-05-15 09:11:29,495 - Communication NW Server - ERROR - MQTT connection failed
+2021-05-15 09:34:24,653 - Communication NW Server - ERROR - MQTT connection failed

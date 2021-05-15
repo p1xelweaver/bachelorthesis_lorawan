@@ -34,9 +34,10 @@ nwserver_logger.addHandler(fh)
 paramiko.util.log_to_file('paramiko.log')
 
 
-# thread class for executing SSH connection to RPi
 class SSHThread(threading.Thread):
-
+    """
+    thread class for executing SSH connection to RPi
+    """
     def __init__(self, model, view):
         super().__init__()
         self.model = model
@@ -56,17 +57,15 @@ class SSHThread(threading.Thread):
 
             time.sleep(60)
 
-            # ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            # ssh.connect(RASPIIP, PORT, USERNAME, PASSWORD)
             # Make connection to sFTP
             with pysftp.Connection(raspberry_ip,
                                    username=username,
                                    password=password,
                                    cnopts=cnopts
                                    ) as sftp:
-                sftp.put('connect_stick_OTAA.py')
-                sftp.put('monitor_parameters_V8.py')
-                sftp.put('python_mqtt_grafana_V3.py')
+                sftp.put('connect_stick_otaa.py')
+                sftp.put('monitor_parameters.py')
+                sftp.put('mqtt_grafana.py')
 
             # sftp.close()
             print("done with SSH")
@@ -76,9 +75,10 @@ class SSHThread(threading.Thread):
             self.model.set_error_flag(-1)
 
 
-# thread class for executing OTAA script
 class OTAAThread(threading.Thread):
-
+    """
+    thread class for executing OTAA script
+    """
     def __init__(self, model, view):
         super().__init__()
         self.model = model
@@ -99,25 +99,24 @@ class OTAAThread(threading.Thread):
             cnopts = pysftp.CnOpts()
             cnopts.hostkeys = None
 
+            # execute connection via OTAA
             stdin, stdout, stderr = ssh.exec_command(
-                "nohup python connect_stick_OTAA.py --appeui " + app_eui + " --appkey " + app_key + " --deveui " + dev_eui + "&> connection.log &")
+                "nohup python connect_stick_otaa.py --appeui " + app_eui + " --appkey " + app_key + " --deveui " + dev_eui + "&> connection.log &")
 
             time.sleep(60)
 
+            # look if connection script is still running. otherwise it is expected to be done
             stdin, stdout, stderr = ssh.exec_command("ps -aef | grep connect_stick_OTAA.py")
             tmp = stdout.readlines()
             connecting = len(tmp)
             i = 0
             while (connecting > 2) and (i <= 2):
-                #  print("checking otaa still executing")
                 time.sleep(30)
                 stdin, stdout, stderr = ssh.exec_command("ps -aef | grep connect_stick_OTAA.py")
                 tmp = stdout.readlines()
                 connecting = len(tmp)
                 i += 1
-            # print("i: " + str(i) + " tmp: " + str(tmp))
             if i > 2:
-                # print("no connection possible")
                 rpi_logger.error("OTAA failed")
                 self.model.set_error_flag(-1)
         except Exception as e:
@@ -127,9 +126,10 @@ class OTAAThread(threading.Thread):
         rpi_logger.info("OTAA successful")
 
 
-# thread class for executing measurement script on RPI
 class MeasurementThread(threading.Thread):
-
+    """
+    thread class for executing measurement script on RPI
+    """
     def __init__(self, model, view):
         super().__init__()
         self.model = model
@@ -155,13 +155,15 @@ class MeasurementThread(threading.Thread):
             cnopts = pysftp.CnOpts()
             cnopts.hostkeys = None
 
+            # execute measurement script
             ssh.exec_command(
-                "nohup python monitor_parameters_V8.py --runs " + no_of_runs + " --ul_interval " + ul_interval +
+                "nohup python monitor_parameters.py --runs " + no_of_runs + " --ul_interval " + ul_interval +
                 " --dl_interval " + dl_interval + " --deveui " + device_eui + " --adapt_int " + str(adapt_int) +
                 " --db_host " + db_host + " --db_name " + db_name + " &> monitoring.log &")
 
+            # execute mqtt measurement script
             if db_name is not "" and db_host is not "":
-                ssh.exec_command("nohup python python_mqtt_grafana_V3.py  --appid " + app_id +
+                ssh.exec_command("nohup python mqtt_grafana.py  --appid " + app_id +
                                  " --accesskey " + access_key + " --deveui " + device_eui +
                                  " --db_host " + db_host + " --db_name " + db_name +
                                  " &> mqttLog_" + db_name + ".log &")
@@ -172,7 +174,7 @@ class MeasurementThread(threading.Thread):
             time.sleep(120)
 
             # check if mqtt script was started
-            stdin, stdout, stderr = ssh.exec_command("ps -aef | grep python_mqtt_grafana_V3")
+            stdin, stdout, stderr = ssh.exec_command("ps -aef | grep mqtt_grafana")
             chk = stdout.readlines()
             if len(chk) < 3:
                 nwserver_logger.error("MQTT connection failed")
@@ -183,8 +185,10 @@ class MeasurementThread(threading.Thread):
         nwserver_logger.info("Measurement started")
 
 
-# class for starting Graphical User Interface
 class View(tk.Tk):
+    """
+    class for starting Graphical User Interface
+    """
     def __init__(self, clean_controller, model):
         super().__init__()
         self.controller = clean_controller
@@ -219,8 +223,10 @@ class View(tk.Tk):
 
         ttk.Button(frm, text="Start Framework", command=lambda: self.controller.start_framework()).pack()
 
-    # open window for SSH configuration
     def ssh_window(self):
+        """
+            open window for SSH configuration
+        """
         self.destroy()
         root = tk.Tk()
         root.title("SSH Configuration")
@@ -234,9 +240,11 @@ class View(tk.Tk):
         button_quit = tk.Button(root.conf_frame, text='Quit', command=root.conf_frame.quit)
         button_quit.pack(side=tk.RIGHT, padx=5, pady=5)
 
-    # built ssh data input GUI
     @staticmethod
     def _make_ssh_data_inputs(root):
+        """
+         built ssh data input GUI
+        """
         outer_frm = ttk.Frame(root.conf_frame)
         outer_frm.pack()
 
@@ -245,7 +253,6 @@ class View(tk.Tk):
 
         entries = []
         for field in ssh_fields:
-            #print(field)
             row = tk.Frame(frm)
             lab = tk.Label(row, width=15, text=field, anchor='w', font="Verdana 10 bold")
             ent = tk.Entry(row)
@@ -255,8 +262,10 @@ class View(tk.Tk):
             entries.append((field, ent))
         return entries
 
-    # initiate thread while showing an infobox
     def open_infobox(self, initiator):
+        """
+        initiate thread while showing an infobox
+        """
         global t
         if initiator == "ssh":
             t = SSHThread(self.model, self)

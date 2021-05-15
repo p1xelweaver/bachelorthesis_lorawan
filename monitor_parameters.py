@@ -1,4 +1,8 @@
 ##!/usr/bin/env python
+## adapted from https://github.com/ronoth/LoStik
+# Author Gudrun Huszar
+# Jan. 2021
+
 import sys
 import time
 from datetime import datetime
@@ -29,7 +33,7 @@ output = {}
 tags['devEUI'] = args.deveui
 MEASUREMENT = []
 
-# create influx connection
+#set up data base connection
 DB_HOST = args.db_host
 DB_NAME = args.db_name
 client = InfluxDBClient(host=DB_HOST, port=8086)
@@ -90,26 +94,27 @@ class PrintLines(LineReader):
         self.transport.write(('%s\r\n' % cmd).encode('UTF-8'))
         time.sleep(delay)
 
-    # method to prepare JSON for influxDB
     @staticmethod
     def _prepare_json():
+        """method to prepare data in json format for db"""
         fields[MEASUREMENT[0]] = MEASUREMENT[1]
         del MEASUREMENT[:]
 
 
 ser = serial.Serial(PORT, baudrate=57600)
+# set measurement configuration
 no_of_runs = args.runs
 ul_interval = args.ul_interval
 dl_interval = args.dl_interval
 adapt_int = args.adapt_int
 with ReaderThread(ser, PrintLines) as protocol:
-    # set downlink time interval
+    # set linkCheckReq Interval for receiving downlink messages
     protocol.send_cmd("mac set linkchk %s" % dl_interval)
     j = 0
     # performing measurements and store them in the fields array for json dump
     for i in range(int(no_of_runs)):
         print(" ")
-        output['measurement'] = 'Lostick'
+        output['measurement'] = 'LoStick'
         time_log = datetime.isoformat(datetime.now())
         output['time'] = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
         sys.stdout.write("%s, " % time_log)
@@ -138,17 +143,23 @@ with ReaderThread(ser, PrintLines) as protocol:
         MEASUREMENT.append('mrgn')
         protocol.send_cmd("mac get mrgn")
 
+        # store the internal frame counter
         fields['frames'] = str(i)
+
+        # send unconfirmed uplink message
         protocol.send_cmd("mac tx uncnf 1 %d" % i)
 
         output['tags'] = tags
         output['fields'] = fields
 
+        # write data
         influx_json = json.dumps(output)
         client.write_points([output])
 
+        # wait for sending next uplink message
         time.sleep(float(ul_interval))
         sys.stdout.flush()
+        # tranmission interval experiments
         if adapt_int is "1" and j >= 20:
             if int(ul_interval) < 60:
                 ul_interval = 0

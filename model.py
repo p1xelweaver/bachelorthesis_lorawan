@@ -1,4 +1,8 @@
 # model class for setting and getting configuration
+# GUI for LoRaWAN framework
+# Author Gudrun Huszar
+# Jan. 2021
+
 class Model:
     def __init__(self):
         pass

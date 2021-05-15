@@ -1,3 +1,7 @@
+# Controller for LoRaWAN framework GUI
+# Author Gudrun Huszar
+# Jan. 2021
+
 from model import Model
 from view import View
 import paramiko
@@ -20,8 +24,9 @@ class Controller:
     def start_framework(self):
         self.__view.ssh_window()
 
-    # method to fetch ssh credentials from GUI
+
     def fetch_ssh_data(self, entries):
+        """ method to fetch ssh credentials from GUI"""
         raspberry_ip = entries[0][1].get()
         username = entries[1][1].get()
         password = entries[2][1].get()
@@ -33,8 +38,8 @@ class Controller:
         # start thread for ssh connection in background
         threading.Thread(target=self.infobox_connect_to_rpi()).start()
 
-    # method to fetch device credentials from GUI
     def fetch_device_data(self, entries):
+        """method to fetch device credentials from GUI"""
         appeui = entries[0][1].get()
         appkey = entries[1][1].get()
         deviceeui = entries[2][1].get()
@@ -52,8 +57,8 @@ class Controller:
             self.__model.set_appid(appid)
             threading.Thread(target=self.infobox_activate_otaa()).start()
 
-    # method to fetch configuration for measurement from GUI
     def fetch_measurement(self, entries, adapt_int):
+        """# method to fetch configuration for measurement from GUI"""
         for entry in entries:
             field = entry[0]
             text = entry[1].get()
@@ -75,18 +80,21 @@ class Controller:
         threading.Thread(target=self.infobox_start_measurement()).start()
 
     def infobox_connect_to_rpi(self):
+        """show infobox while connecting to RPi"""
         self.__view.open_infobox("ssh")
         chk = self.__model.get_error_flag()
         if chk == 0:
             self.__view.device_window()
 
     def infobox_activate_otaa(self):
+        """show infobox while connecting device to LoRaWAN server"""
         self.__view.open_infobox("otaa")
         chk = self.__model.get_error_flag()
         if chk == 0:
             self.__view.measurement_window()
 
     def infobox_start_measurement(self):
+        """"Show infobox to inform about measurements"""
         self.__view.open_infobox("measure")
 
 

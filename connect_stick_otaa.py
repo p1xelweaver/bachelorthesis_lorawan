@@ -1,5 +1,8 @@
 ##!/usr/bin/env python3
 ## adapted from https://github.com/ronoth/LoStik
+# Author Gudrun Huszar
+# Jan. 2021
+
 import time
 import argparse
 from enum import IntEnum
@@ -27,8 +30,10 @@ args = parser.parse_args()
 OTAA_RETRIES = 5
 PORT = ""
 
-# find Lostik on USB port
 for i in range(0, 3):
+    """
+    find Lostik on USB port
+    """
     tmp = os.system("ls /dev/ttyUSB" + str(i))
     if tmp == 0:
         PORT = "/dev/ttyUSB" + str(i)
@@ -52,7 +57,7 @@ class PrintLines(LineReader):
     state = ConnectionState.CONNECTING
 
     def retry(self, action):
-        if (self.retries >= OTAA_RETRIES):
+        if self.retries >= OTAA_RETRIES:
             print("Too many retries, exiting")
             self.state = ConnectionState.TO_MANY_RETRIES
             return
@@ -64,14 +69,12 @@ class PrintLines(LineReader):
         return self.transport.serial.readline()
 
     def join(self):
-        # TODO maybe delete abp
-        if args.joinmode == "abp":
-            self.join_abp()
-        else:
-            self.join_otaa()
+        self.join_otaa()
 
-    # join method - before joining set dr to 5 for optimally reaching gateway and adr to on
     def join_otaa(self):
+        """
+        join method - before joining set dr to 5 for optimally reaching gateway and adr to on
+        """
         self.send_cmd('mac set dr 5')
         time.sleep(1)
         self.send_cmd('mac set adr on')
@@ -94,12 +97,15 @@ class PrintLines(LineReader):
         self.transport = transport
         self.retry(self.join)
 
-    # method for getting otaa result
+
     def handle_line(self, data):
+        """
+        method for getting otaa result
+        """
         print("STATUS: %s" % data)
         if data.strip() == "denied" or data.strip() == "no_free_ch":
             print("Retrying OTAA connection")
-        #           self.retry(self.join)
+            self.retry(self.join)
         elif data.strip() == "accepted":
             print("UPDATING STATE to connected")
             self.state = ConnectionState.CONNECTED
