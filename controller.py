@@ -58,7 +58,10 @@ class Controller:
             threading.Thread(target=self.infobox_activate_otaa()).start()
 
     def fetch_measurement(self, entries, adapt_int):
-        """# method to fetch configuration for measurement from GUI"""
+        """
+        method to fetch configuration for measurement from GUI
+        """
+
         for entry in entries:
             field = entry[0]
             text = entry[1].get()
@@ -69,15 +72,18 @@ class Controller:
         dl_interval = entries[2][1].get()
         adapt_interval = adapt_int.get()
 
-        self.__model.set_noofruns(no_of_runs)
-        self.__model.set_dl_interval(dl_interval)
-        self.__model.set_ul_interval(ul_interval)
-        self.__model.set_db_host(entries[3][1].get())
-        self.__model.set_db_name(entries[4][1].get())
-        self.__model.set_adapt_int(adapt_interval)
-
-        # start thread to start measurement
-        threading.Thread(target=self.infobox_start_measurement()).start()
+        if ul_interval < dl_interval:
+            # the uplink interval has to be at least as big as the downlink interval
+            self.__view.open_warning_message("interval")
+        else:
+            # start thread to start measurement
+            self.__model.set_noofruns(no_of_runs)
+            self.__model.set_dl_interval(dl_interval)
+            self.__model.set_ul_interval(ul_interval)
+            self.__model.set_db_host(entries[3][1].get())
+            self.__model.set_db_name(entries[4][1].get())
+            self.__model.set_adapt_int(adapt_interval)
+            threading.Thread(target=self.infobox_start_measurement()).start()
 
     def infobox_connect_to_rpi(self):
         """show infobox while connecting to RPi"""

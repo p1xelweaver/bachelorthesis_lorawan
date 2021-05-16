@@ -308,8 +308,10 @@ class View(tk.Tk):
             button_end = tk.Button(closing_window.button_frame, text='Quit', command=closing_window.button_frame.quit)
             button_end.pack(side=tk.LEFT, padx=5, pady=5)
 
-    # open window for device configuration
     def device_window(self):
+        """
+        open window for device configuration
+        """
         print("Opening device window")
         dev_window = tk.Tk()
         dev_window.title("Device Configuration")
@@ -323,9 +325,11 @@ class View(tk.Tk):
         b2 = tk.Button(dev_window.device_frame, text='Quit', command=dev_window.destroy)
         b2.pack(side=tk.RIGHT, padx=5, pady=5)
 
-    # built device data input GUI
     @staticmethod
     def _make_device_config_inputs(dev_window):
+        """
+        built device data input GUI
+        """
         outer_frm = ttk.Frame(dev_window.device_frame)
         outer_frm.pack()
         frm = ttk.Frame(outer_frm)
@@ -353,8 +357,10 @@ class View(tk.Tk):
             entries.append((field, ent))
         return entries
 
-    # open window for measurement configuration
     def measurement_window(self):
+        """
+        open window for measurement configuration
+        """
         measurement_window = tk.Toplevel()
         measurement_window.title("Measurement Configuration")
         measurement_window.measurement_frame = ttk.Frame(measurement_window)
@@ -374,9 +380,11 @@ class View(tk.Tk):
         b2 = tk.Button(outer_frm, text='Quit', command=measurement_window.destroy)
         b2.pack(side=tk.RIGHT, padx=5, pady=5)
 
-    # built measurement data input GUI
     @staticmethod
     def _make_measurement_config_inputs(frm):
+        """
+        built measurement data input GUI
+        """
         entries = []
         for field in measurement_fields:
             row = tk.Frame(frm)
@@ -388,9 +396,11 @@ class View(tk.Tk):
             entries.append((field, ent))
         return entries
 
-    # built GUI with error information
     @staticmethod
     def open_error_messagebox():
+        """
+        built GUI with error information
+        """
         error_window = tk.Toplevel()
         error_window.title("Error")
         error_window.geometry("300x100")
@@ -408,9 +418,11 @@ class View(tk.Tk):
         button_end = tk.Button(error_window.measurement_frame, text='Quit', command=error_window.measurement_frame.quit)
         button_end.pack(side=tk.BOTTOM, padx=5, pady=5)
 
-    # built GUI with warning
     @staticmethod
     def open_warning_message(initiator):
+        """
+        built GUI with warning
+        """
         warning_window = tk.Toplevel()
         warning_window.title("Error")
         warning_window.geometry("300x100")
@@ -428,6 +440,8 @@ class View(tk.Tk):
             text_var.set("SSH failed. \n Please check credentials and connection.")
         elif initiator == "otaa":
             text_var.set("Your keys do not match the required length. \n Please check them again. \n ")
+        elif initiator == "interval":
+            text_var.set("Uplink message interval \n has to be >= downlink message interval.")
         info_text.pack()
         button_end = tk.Button(warning_window.info_frm, text='Go Back', command=warning_window.destroy)
         button_end.pack(side=tk.BOTTOM, padx=5, pady=5)
