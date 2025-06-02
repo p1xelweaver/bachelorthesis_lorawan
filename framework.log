@@ -1,0 +1,2 @@
+2025-06-02 16:20:48,301 - Communication RPi - ERROR - SSH connection failed
+2025-06-02 16:20:48,301 - Communication RPi - ERROR - Unable to connect to 192.168.178.82: [Errno 60] Operation timed out

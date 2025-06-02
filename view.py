@@ -162,7 +162,7 @@ class MeasurementThread(threading.Thread):
                 " --db_host " + db_host + " --db_name " + db_name + " &> monitoring.log &")
 
             # execute mqtt measurement script
-            if db_name is not "" and db_host is not "":
+            if db_name != "" and db_host is not "":
                 ssh.exec_command("nohup python mqtt_grafana.py  --appid " + app_id +
                                  " --accesskey " + access_key + " --deveui " + device_eui +
                                  " --db_host " + db_host + " --db_name " + db_name +
@@ -281,7 +281,7 @@ class View(tk.Tk):
         infobox.geometry("300x100")
         tk.Message(infobox, text="Configuring... \n Please wait \n ", padx=20, pady=20, font="Verdana 10 bold",
                    anchor='center').pack()
-        while t.isAlive():
+        while t.is_alive:
             infobox.update()
         infobox.destroy()
         # show warning or error if something went wrong

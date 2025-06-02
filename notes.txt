@@ -1,0 +1,12 @@
+# Analyzing LoRa signal behaviour via moisture sensor monitoring
+
+#   Program startup tasks:
+#   1. Connect LoRa Stick to LoRa gateway via OTAA
+#       1.1 Set default settings (e.g. Spreading factor...)
+#       1.2 Use credentials: App EUI, App Key, Device EUI
+#   2. Connect to moisture sensor via USB2Serial adapter
+#       2.1 Read moisture and temperature from sensor
+#       2.2 Put data into local file and into LoRa payload
+#           2.2.1 Data: moisture, temperature, LoRa signal strength statistics
+#       2.3 Send payload to TTN via LoRa stick
+#       2.4 Repeat step 2.1 - 2.3 on a regular intervall
